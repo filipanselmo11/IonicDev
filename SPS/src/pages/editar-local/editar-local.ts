@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, Events } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
 import { Local } from '../module/local';
-
+import { HttpClient } from '@angular/common/http';
 declare var google;
 
 @IonicPage()
@@ -24,7 +24,7 @@ export class EditarLocalPage{
   directionsService = new google.maps.DirectionsService;
   directionsDisplay = new google.maps.DirectionsRenderer;
   
-  constructor(public navCtrl: NavController, public navParams: NavParams, public geolocation: Geolocation, private alertCtrl: AlertController, public events: Events){
+  constructor(public navCtrl: NavController, public navParams: NavParams, public geolocation: Geolocation, private alertCtrl: AlertController, public events: Events, private http: HttpClient){
   }
 
   presentAlert(){
@@ -126,8 +126,25 @@ export class EditarLocalPage{
       position: this.map.getCenter()
     });
 
-    let content = "<h6>{{local.nome}}</h6>";
-    this.addInfoWindow(marker,content);
+    /*let content = "<h6>Local Salvo</h6>";
+    this.addInfoWindow(marker,content);*/
+
+    this.http.get('http://localhost:5000/get_recommendation/?lat=position.coords.latitude&long=position.coords.longitude&year=1997&sex=0&vehicle=2').subscribe((response) => {
+      console.log(response);
+      /*let content = "<h6>Local Salvo</h6>";*/
+      this.addInfoWindow(marker,response);
+    });
+  }
+
+  removeMarker(){
+    var marker = new google.maps.Marker({
+      map:this.map,
+      animation: google.maps.Animation.DROP,
+      position: this.map.getCenter()
+    });
+
+    marker.setMap(null);
+
   }
 
   addInfoWindow(marker,content){
