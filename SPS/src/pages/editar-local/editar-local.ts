@@ -20,6 +20,9 @@ export class EditarLocalPage{
   longitude: Number;
   markers: any = [];
   locais: any = [];
+  testCheckboxOpen: boolean;
+  testCheckboxResult: any;
+
 
   directionsService = new google.maps.DirectionsService;
   directionsDisplay = new google.maps.DirectionsRenderer;
@@ -128,24 +131,91 @@ export class EditarLocalPage{
 
     /*let content = "<h6>Local Salvo</h6>";
     this.addInfoWindow(marker,content);*/
-
+    this.presentPrompt();
     this.http.get('http://localhost:5000/get_recommendation/?lat=position.coords.latitude&long=position.coords.longitude&year=1997&sex=0&vehicle=2').subscribe((response) => {
       console.log(response);
-      /*let content = "<h6>Local Salvo</h6>";*/
-      this.addInfoWindow(marker,response);
+      let content = "<h6>Local Salvo</h6>";
+      this.addInfoWindow(marker,content);
     });
   }
 
-  removeMarker(){
-    var marker = new google.maps.Marker({
-      map:this.map,
-      animation: google.maps.Animation.DROP,
-      position: this.map.getCenter()
-    });
+  addNewMarker(){
+    var mock_places = [
+      [ -3.01871502, -60.02692036, 'iTriad'],
+      [ -3.04878376, -60.00482527, 'Casa Rodrigo'],
+      [ -3.09165002, -60.01847857, 'EST'],
+      [ -3.13181087, -59.97766282, 'CITS'],
+      [ -3.08990342, -60.05997371, 'Casa Bebeto'],
+      [ -3.12615941, -60.023208,   'Sebra Lab'],
+      [ -3.06034519, -60.02621866, 'Tumpex']
+   ]
 
-    marker.setMap(null);
+  var index = Math.floor(Math.random() * 7);
+  var place = mock_places[index];
+  var latitude = place[0];
+  var longitude = place[1];
+  var label = place[2];
+  //let position =  new google.maps.LatLng(latitude, longitude);
+
+  var marker = new google.maps.Marker({
+    map: this.map,
+    position: this.map.getCenter(),
+    animation: google.maps.Animation.DROP,
+    title:'Itriad'
+  });
+  this.showCheckbox();
 
   }
+
+  showCheckbox() {
+    let alert = this.alertCtrl.create();
+    alert.setTitle('Esse lugar é relevante pra voce ?');
+
+    alert.addInput({
+      type: 'checkbox',
+      label: 'ruim',
+      value: 'value1',
+      checked: false
+    });
+
+    alert.addInput({
+      type: 'checkbox',
+      label: 'pessimo',
+      value: 'value2',
+    });
+
+
+    alert.addInput({
+      type: 'checkbox',
+      label: 'mediano',
+      value: 'value3',
+    });
+
+
+    alert.addInput({
+      type: 'checkbox',
+      label: 'bom',
+      value: 'value4',
+    });
+
+
+    alert.addInput({
+      type: 'checkbox',
+      label: 'excelente',
+      value: 'value5',
+    });
+
+    alert.addButton({
+      text: 'Ok',
+      handler: data => {
+        console.log('Checkbox data:', data);
+        this.testCheckboxOpen = false;
+        this.testCheckboxResult = data;
+      }
+    });
+    alert.present();
+  }
+
 
   addInfoWindow(marker,content){
     let infoWindow = new google.maps.InfoWindow({
@@ -161,5 +231,6 @@ export class EditarLocalPage{
   ionViewDidLoad(){
     this.loadMap();
   }
+
 
 }

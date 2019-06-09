@@ -26,7 +26,6 @@ export class MapaPage {
     this.geolocation.getCurrentPosition()
     .then((resp) => {
       const position = new google.maps.LatLng(resp.coords.latitude, resp.coords.longitude);
-
       const mapOptions = {
         zoom: 18,
         center: position
